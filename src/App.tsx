@@ -1,24 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState, ChangeEvent} from 'react';
 import './App.css';
+import SearchInput from './components/SearchInput/SearchInput';
+import ResultTable from './components/ResultTable/ResultTable';
+import './components/SearchInput/SearchInput.tsx'
 
 function App() {
+  const [SearchResults, setSearchResults] = useState([])
+  const[queryValue, setQueryValue] = useState("")
+
+  //variabless
+
+  // handles input change
+  function handleChange(ev:ChangeEvent<HTMLInputElement>){
+    setQueryValue(ev.target.value);
+  }
+
+  // use effect to load JSON on initial render
+  useEffect(() => {
+    let url = `http://www.songsterr.com/a/ra/songs.json?pattern=${queryValue}`;
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => 
+      setSearchResults(data)
+    );
+  }, [queryValue]);
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <SearchInput handleChange={handleChange}/>
+      <ResultTable searchResults={SearchResults}/>
     </div>
   );
 }
